@@ -1,17 +1,28 @@
-package com.wileyedge;
+package com.wileyedge.flooringmastery;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+import com.wileyedge.flooringmastery.view.UserIOConsoleImpl;
+
+import java.util.Random;
+
 public class Main {
     public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+        System.out.println("Welcome and well met.");
+        UserIOConsoleImpl console = new UserIOConsoleImpl();
+        Random rng = new Random();
+        boolean off = false;
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
-        }
+        String entry; int n;
+
+        do {
+            if (rng.nextInt(2) == 0) {
+                entry = console.readString("[String] ");
+                console.print(entry);
+                if (entry.isBlank()) off = true;
+            } else {
+                n = console.readInt("[int] ");
+                console.print("" + n);
+                if (n == -1) off = true;
+            }
+        } while (!off);
     }
 }

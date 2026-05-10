@@ -5,11 +5,11 @@ import com.wileyedge.flooringmastery.dao.ExportDao;
 public class ExportDaoStub implements ExportDao {
     @Override
     public String exportActiveData() {
-        return "";
+        return "Exported active data.";
     }
 
     @Override
     public String exportAllData() {
-        return "";
+        return "Exported all data.";
     }
 }

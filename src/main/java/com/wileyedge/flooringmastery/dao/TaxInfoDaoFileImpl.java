@@ -10,10 +10,16 @@ import java.util.Collection;
 import java.util.HashMap;
 
 public class TaxInfoDaoFileImpl implements TaxInfoDao {
-    private final String TAX_INFO_FILE = "data/Data/Taxes.txt";
+    private String TAX_INFO_FILE = "data/Data/Taxes.txt";
     private final HashMap<String, TaxInfo> taxInfoMap = new HashMap<>();
 
+    @SuppressWarnings({"unused"})
     public TaxInfoDaoFileImpl() throws PersistenceException {
+        readData();
+    }
+
+    public TaxInfoDaoFileImpl(String TAX_INFO_FILE) throws PersistenceException {
+        this.TAX_INFO_FILE = TAX_INFO_FILE;
         readData();
     }
 

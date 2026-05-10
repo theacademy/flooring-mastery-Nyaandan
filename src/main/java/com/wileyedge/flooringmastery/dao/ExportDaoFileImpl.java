@@ -10,21 +10,26 @@ import java.util.Comparator;
 import java.util.stream.Stream;
 
 public class ExportDaoFileImpl implements ExportDao {
-    private final String ORDERS_LOCATION = "data/Orders";
-    private final String BACKUP_LOCATION = "data/Backup/";
+    private String ORDERS_LOCATION = "data/Orders";
+    private String BACKUP_LOCATION = "data/Backup/";
+
+    @SuppressWarnings({"unused"})
+    public ExportDaoFileImpl() { }
+
+    public ExportDaoFileImpl(String ORDERS_LOCATION, String BACKUP_LOCATION) {
+        this.ORDERS_LOCATION = ORDERS_LOCATION;
+        this.BACKUP_LOCATION = BACKUP_LOCATION;
+    }
+
 
     @Override
     public String exportActiveData() throws PersistenceException {
-        processOrders(false);
-        return BACKUP_LOCATION + "DataExport.txt";
+        return processOrders(false);
     }
 
     @Override
     public String exportAllData() throws PersistenceException {
-        processOrders(true);
-        return BACKUP_LOCATION + "DataSnapshot_"
-                + LocalDate.now().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"))
-                + ".txt";
+        return processOrders(true);
     }
 
     private LocalDate getFileDate(Path path, DateTimeFormatter formatter) {
@@ -33,7 +38,7 @@ public class ExportDaoFileImpl implements ExportDao {
         return LocalDate.parse(datePart, formatter);
     }
 
-    public void processOrders(boolean fullExport) throws PersistenceException {
+    public String processOrders(boolean fullExport) throws PersistenceException {
         Path dir = Paths.get(ORDERS_LOCATION);
 
         DateTimeFormatter filenameFormatter = DateTimeFormatter.ofPattern("MMddyyyy");
@@ -62,10 +67,11 @@ public class ExportDaoFileImpl implements ExportDao {
                         } catch (IOException ignored) {
                         }
                     });
-
         } catch (IOException e) {
             throw new PersistenceException("Error processing data.");
         }
+
+        return filename;
     }
 
 }

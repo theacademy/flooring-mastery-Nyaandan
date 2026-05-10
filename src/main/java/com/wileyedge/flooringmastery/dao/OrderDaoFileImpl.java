@@ -11,16 +11,21 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class OrderDaoFileImpl implements OrderDao {
-    private final String ORDERS_FOLDER = "data/Orders/";
-    private final String ORDER_NUMBER = "data/Data/OrderNumber.txt";
+    private String ORDERS_FOLDER = "data/Orders/";
+    private String ORDER_NUMBER = "data/Data/OrderNumber.txt";
     HashMap<Integer, Order> dayOrders;
 
+    @SuppressWarnings({"unused"})
     public OrderDaoFileImpl() {
         dayOrders = new HashMap<>();
     }
 
-    // Quick read and write function for the order number counter
-    // Got the insight from the AI, and edited it to fit the goal.
+    public OrderDaoFileImpl(String ORDERS_FOLDER, String ORDER_NUMBER) {
+        this.ORDERS_FOLDER = ORDERS_FOLDER;
+        this.ORDER_NUMBER = ORDER_NUMBER;
+        dayOrders = new HashMap<>();
+    }
+
     public int getNextOrderNumber() throws PersistenceException {
         int nextOrderNumber;
 
@@ -30,8 +35,8 @@ public class OrderDaoFileImpl implements OrderDao {
             throw new PersistenceException(e.getMessage());
         }
 
-        try (FileWriter fw = new FileWriter(ORDER_NUMBER)) {
-            fw.write(nextOrderNumber + 1 + "");
+        try (PrintWriter out = new PrintWriter(new FileWriter(ORDER_NUMBER))) {
+            out.write(nextOrderNumber + 1 + "");
         } catch (IOException e) {
             throw new PersistenceException(e.getMessage());
         }

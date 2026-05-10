@@ -14,7 +14,8 @@ public class TaxInfoDaoFileImplTest {
 
     @BeforeEach
     void setUp() throws PersistenceException {
-        testTaxDao = new TaxInfoDaoFileImpl();
+        String testfile = "testdata/Data/Taxes.txt";
+        testTaxDao = new TaxInfoDaoFileImpl(testfile);
     }
 
     @AfterEach
@@ -22,7 +23,7 @@ public class TaxInfoDaoFileImplTest {
     }
 
     @Test
-    void getTaxInfo() throws PersistenceException {
+    void getTaxInfo() {
         TaxInfo wa = testTaxDao.getTaxInfo("WA");
         TaxInfo ky = testTaxDao.getTaxInfo("KY");
         Assertions.assertEquals(new BigDecimal("9.25"), wa.getTaxRate());
@@ -30,7 +31,7 @@ public class TaxInfoDaoFileImplTest {
     }
 
     @Test
-    void getAllTaxInfo() throws PersistenceException {
+    void getAllTaxInfo() {
         Collection<TaxInfo> taxInfo = testTaxDao.getAllTaxInfo();
         TaxInfo cali = new TaxInfo("CA");
         cali.setStateName("California");

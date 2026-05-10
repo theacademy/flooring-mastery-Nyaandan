@@ -8,6 +8,8 @@
     <artifactId>FlooringMastery</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <name>Flooring Mastery</name>
+
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
@@ -15,10 +17,9 @@
     </properties>
     <dependencies>
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>5.14.0</version>
-            <scope>test</scope>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>6.2.18</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -27,5 +28,17 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <finalName>flooring-mastery</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+            </plugin>
+
+        </plugins>
+    </build>
 
 </project>

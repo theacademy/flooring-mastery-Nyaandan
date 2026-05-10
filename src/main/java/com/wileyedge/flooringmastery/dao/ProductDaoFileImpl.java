@@ -10,10 +10,16 @@ import java.util.Collection;
 import java.util.HashMap;
 
 public class ProductDaoFileImpl implements ProductDao {
-    private final String PRODUCTS_FILE = "data/Data/Products.txt";
+    private String PRODUCTS_FILE = "data/Data/Products.txt";
     private final HashMap<String, Product> products = new HashMap<>();
 
+    @SuppressWarnings({"unused"})
     public ProductDaoFileImpl() throws PersistenceException {
+        readData();
+    }
+
+    public ProductDaoFileImpl(String PRODUCTS_FILE) throws PersistenceException {
+        this.PRODUCTS_FILE = PRODUCTS_FILE;
         readData();
     }
 

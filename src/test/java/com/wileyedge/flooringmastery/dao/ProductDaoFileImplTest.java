@@ -14,7 +14,8 @@ public class ProductDaoFileImplTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        testProductDao = new ProductDaoFileImpl();
+        String testfile = "testdata/Data/Products.txt";
+        testProductDao = new ProductDaoFileImpl(testfile);
     }
 
     @AfterEach
@@ -22,7 +23,7 @@ public class ProductDaoFileImplTest {
     }
 
     @Test
-    void getProductInfo() throws Exception {
+    void getProductInfo() {
         String product1 = "Carpet";
         String product2 = "Tile";
 
@@ -34,7 +35,7 @@ public class ProductDaoFileImplTest {
     }
 
     @Test
-    void getAllProductInfo() throws Exception {
+    void getAllProductInfo() {
         Collection<Product> products = testProductDao.getAllProductInfo();
         BigDecimal costPerSqFt = new BigDecimal("5.15");
         BigDecimal laborCostPerSqFt = new BigDecimal("4.75");

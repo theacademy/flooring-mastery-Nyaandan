@@ -3,41 +3,29 @@ package com.wileyedge.flooringmastery.dao;
 import com.wileyedge.flooringmastery.model.Product;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Scanner;
 
 public class ProductDaoFileImpl implements ProductDao {
     private final String PRODUCTS_FILE = "data/Data/Products.txt";
-    private HashMap<String, Product> products = new HashMap<>();
+    private final HashMap<String, Product> products = new HashMap<>();
 
     public ProductDaoFileImpl() throws PersistenceException {
         readData();
     }
 
     private void readData() throws PersistenceException {
-        Scanner scanner;
-
-        try {
-            scanner = new Scanner(
-                    new BufferedReader(new FileReader(PRODUCTS_FILE)));
-        } catch (FileNotFoundException ex) {
-            throw new PersistenceException(
-                    "Could not load products data...");
+        try (BufferedReader br = new BufferedReader(new FileReader(PRODUCTS_FILE))) {
+            br.lines().skip(1).forEach(line -> {
+                Product product = unmarshallData(line);
+                products.put(product.getProductType(), product);
+            });
+        } catch (IOException ex) {
+            throw new PersistenceException("Could not load products data...");
         }
-
-        String currentLine;
-        Product currentProduct;
-        scanner.nextLine(); // Skip the headers
-        while (scanner.hasNextLine()) {
-            currentLine = scanner.nextLine();
-            currentProduct = unmarshallData(currentLine);
-            products.put(currentProduct.getProductType(), currentProduct);
-        }
-        scanner.close();
     }
 
     private Product unmarshallData(String line) {
@@ -48,12 +36,12 @@ public class ProductDaoFileImpl implements ProductDao {
     }
 
     @Override
-    public Product getProductInfo(String productType)  throws PersistenceException {
+    public Product getProductInfo(String productType) {
         return products.get(productType);
     }
 
     @Override
-    public Collection<Product> getAllProductInfo() throws PersistenceException {
+    public Collection<Product> getAllProductInfo() {
         return products.values();
     }
 }

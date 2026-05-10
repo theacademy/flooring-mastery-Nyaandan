@@ -3,6 +3,7 @@ package com.wileyedge.flooringmastery.model;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Order {
@@ -48,7 +49,6 @@ public class Order {
 
     public void setTaxInfo(TaxInfo taxInfo) {
         this.taxInfo = taxInfo;
-        calculateCosts();
     }
 
     public Product getProductInfo() {
@@ -57,7 +57,6 @@ public class Order {
 
     public void setProductInfo(Product productInfo) {
         this.productInfo = productInfo;
-        calculateCosts();
     }
 
     public BigDecimal getArea() {
@@ -66,7 +65,6 @@ public class Order {
 
     public void setArea(BigDecimal area) {
         this.area = area;
-        calculateCosts();
     }
 
     public BigDecimal getMaterialCost() {
@@ -94,7 +92,7 @@ public class Order {
         calculateCosts();
     }
 
-    private void calculateCosts() {
+    public void calculateCosts() {
         materialCost = area.multiply(productInfo.getCostPerSqFt());
         laborCost = area.multiply(productInfo.getLaborCostPerSqFt());
         tax = materialCost.add(laborCost).multiply(taxInfo.getTaxRate())
@@ -107,6 +105,7 @@ public class Order {
         if (o == null || getClass() != o.getClass()) return false;
         Order order = (Order) o;
         return orderNumber == order.orderNumber
+                && Objects.equals(orderDate, order.orderDate)
                 && Objects.equals(customerName, order.customerName)
                 && Objects.equals(taxInfo, order.taxInfo)
                 && Objects.equals(productInfo, order.productInfo)
@@ -119,7 +118,7 @@ public class Order {
 
     @Override
     public int hashCode() {
-        return Objects.hash(orderNumber,
+        return Objects.hash(orderNumber, orderDate,
                 customerName, taxInfo, productInfo, area,
                 materialCost, laborCost, tax, total);
     }
@@ -128,18 +127,50 @@ public class Order {
     public String toString() {
         return "Order{" +
                 "orderNumber=" + orderNumber +
+                ", orderDate=" + orderDate +
                 ", customerName='" + customerName + '\'' +
                 ", taxInfo=" + taxInfo +
                 ", productInfo=" + productInfo +
                 ", area=" + area +
                 ", materialCost=" + materialCost +
                 ", laborCost=" + laborCost +
+                ", tax=" + tax +
                 ", total=" + total +
                 '}';
     }
 
     public String fullPrint() {
-        return toString();
+        return String.format(
+                "**********************%n" +
+                        "%s%n" +
+                        "DATE: %s%n" +
+                        "CUSTOMER: %s%n" +
+                        "STATE: %s - %s%n" +
+                        "TAX RATE: %,.2f%n" + // Adds commas to tax rate
+                        "PRODUCT: %s%n" +
+                        "MATERIAL UNIT COST: %,.2f%n" +
+                        "LABOR UNIT COST: %,.2f%n" +
+                        "AREA: %,.2f%n" +
+                        "TOTAL MATERIAL COST: %,.2f%n" + // e.g., 1,500.00
+                        "TOTAL LABOR COST: %,.2f%n" +
+                        "TAX AMOUNT: %,.2f%n" +
+                        "ORDER TOTAL: %,.2f%n" +
+                        "**********************",
+                orderNumber == 0 ? "ORDER NO. PENDING" : "ORDER NO. " + orderNumber,
+                orderDate.format(DateTimeFormatter.ofPattern("MM-dd-yyyy")),
+                customerName,
+                taxInfo.getStateCode(), taxInfo.getStateName(),
+                taxInfo.getTaxRate(),
+                productInfo.getProductType(),
+                productInfo.getCostPerSqFt(),
+                productInfo.getLaborCostPerSqFt(),
+                area,
+                materialCost,
+                laborCost,
+                tax,
+                total
+        );
+
     }
 
     public String compactPrint() {

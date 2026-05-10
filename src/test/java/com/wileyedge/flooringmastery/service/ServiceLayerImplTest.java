@@ -1,6 +1,5 @@
 package com.wileyedge.flooringmastery.service;
 
-import com.wileyedge.flooringmastery.dao.PersistenceException;
 import com.wileyedge.flooringmastery.model.Order;
 import com.wileyedge.flooringmastery.model.Product;
 import com.wileyedge.flooringmastery.model.TaxInfo;
@@ -10,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,7 +22,8 @@ class ServiceLayerImplTest {
         service = new ServiceLayerImpl(
                 new OrderDaoStub(),
                 new ProductDaoStub(),
-                new TaxInfoDaoStub());
+                new TaxInfoDaoStub(),
+                new ExportDaoStub());
         amisOrder = new Order();
     }
 
@@ -39,7 +40,8 @@ class ServiceLayerImplTest {
                         new BigDecimal("6.20")),
                 new BigDecimal("800"));
         amisOrder.setOrderNumber(14);
-        amisOrder.setOrderDate(LocalDate.parse("2022-04-12"));
+        amisOrder.setOrderDate(LocalDate.parse("04-12-2022",
+                DateTimeFormatter.ofPattern("MM-dd-yyyy")));
     }
 
     @AfterEach
@@ -48,15 +50,16 @@ class ServiceLayerImplTest {
 
     @Test
     void addOrder() throws Exception {
-        String date = "2022-04-12";
+        String date = "04-12-2022";
         String customerName = "Ameliance";
         String state = "SY";
         String product = "Granite";
         String area = "800";
 
         try {
-            Order newOrder = service.addOrder(date, customerName, state, product, area);
-            assertNotNull(newOrder);
+            Order newOrder = service.prepareOrder(date, customerName, state, product, area);
+            Order addedOrder = service.addOrder(date, newOrder);
+            assertNotNull(addedOrder);
         } catch (DataValidationException e) {
             fail("Exception thrown despite valid data.");
         }
@@ -64,41 +67,42 @@ class ServiceLayerImplTest {
 
     @Test
     void getOrder() throws Exception {
-        Order normallyAmisOrder = service.getOrder("2022-04-12", 14);
+        Order normallyAmisOrder = service.getOrder("04-12-2022", 14);
         assertNotNull(normallyAmisOrder);
         assertEquals(amisOrder, normallyAmisOrder);
 
-        Order nonexistent = service.getOrder("2022-04-12", 15);
+        Order nonexistent = service.getOrder("04-12-2022", 15);
         assertNull(nonexistent);
     }
 
     @Test
     void getAllOrders() throws Exception {
-        Collection<Order> orders = service.getAllOrders("2022-04-12");
+        Collection<Order> orders = service.getAllOrders("04-12-2022");
         assertEquals(1, orders.size());
         assertTrue(orders.contains(amisOrder));
     }
 
     @Test
     void editOrder() throws Exception {
-        String date = "2022-04-12";
+        String date = "04-12-2022";
         int orderNumber = 14;
         String customerName = "Ameliance";
         String state = "SY";
         String product = "Granite";
         String area = "800";
 
-        Order edittedOrder = service.editOrder(date, orderNumber, customerName, state, product, area);
-        assertNotNull(edittedOrder);
+        Order editedOrder = service.prepareOrder(date, orderNumber, customerName, state, product, area);
+        Order editedOrderInFile = service.editOrder(date, orderNumber, editedOrder);
+        assertNotNull(editedOrderInFile);
     }
 
     @Test
     void removeOrder() throws Exception {
-        Order normallyAmisOrder = service.removeOrder("2022-04-12", 14);
+        Order normallyAmisOrder = service.removeOrder("04-12-2022", 14);
         assertNotNull(normallyAmisOrder);
         assertEquals(amisOrder, normallyAmisOrder);
 
-        Order nonexistent = service.removeOrder("2022-04-12", 15);
+        Order nonexistent = service.removeOrder("04-12-2022", 15);
         assertNull(nonexistent);
     }
 }

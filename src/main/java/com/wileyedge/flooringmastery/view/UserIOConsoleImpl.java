@@ -1,6 +1,5 @@
 package com.wileyedge.flooringmastery.view;
 
-import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class UserIOConsoleImpl implements UserIO {
@@ -27,14 +26,11 @@ public class UserIOConsoleImpl implements UserIO {
         System.out.print(prompt);
 
         try {
-            return scanner.nextInt();
-        } catch (InputMismatchException e) {
-            String errorMsg = "Invalid data entered.";
-            System.out.println(errorMsg);
+            return Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            /*String errorMsg = "Invalid data entered.";
+            System.out.println(errorMsg);*/
             return 0;
-
-        } finally {
-            scanner.nextLine();
         }
     }
 }

@@ -1,6 +1,6 @@
 package com.wileyedge.flooringmastery.dao;
 
 public interface ExportDao {
-    public void exportActiveData() throws PersistenceException;
-    public void exportAllData() throws PersistenceException;
+    String exportActiveData() throws PersistenceException;
+    String exportAllData() throws PersistenceException;
 }

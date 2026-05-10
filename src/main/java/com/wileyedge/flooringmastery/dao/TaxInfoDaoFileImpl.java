@@ -3,12 +3,11 @@ package com.wileyedge.flooringmastery.dao;
 import com.wileyedge.flooringmastery.model.TaxInfo;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Scanner;
 
 public class TaxInfoDaoFileImpl implements TaxInfoDao {
     private final String TAX_INFO_FILE = "data/Data/Taxes.txt";
@@ -19,25 +18,14 @@ public class TaxInfoDaoFileImpl implements TaxInfoDao {
     }
 
     private void readData() throws PersistenceException {
-        Scanner scanner;
-
-        try {
-            scanner = new Scanner(
-                    new BufferedReader(new FileReader(TAX_INFO_FILE)));
-        } catch (FileNotFoundException ex) {
-            throw new PersistenceException(
-                    "Could not load taxInfo data...");
+        try (BufferedReader br = new BufferedReader(new FileReader(TAX_INFO_FILE))) {
+            br.lines().skip(1).forEach(line -> {
+                TaxInfo taxInfo = unmarshallData(line);
+                taxInfoMap.put(taxInfo.getStateCode(), taxInfo);
+            });
+        } catch (IOException ex) {
+            throw new PersistenceException("Could not load taxInfo data...");
         }
-
-        String currentLine;
-        TaxInfo currentTaxInfo;
-        scanner.nextLine(); // Skip the headers
-        while (scanner.hasNextLine()) {
-            currentLine = scanner.nextLine();
-            currentTaxInfo = unmarshallData(currentLine);
-            taxInfoMap.put(currentTaxInfo.getStateCode(), currentTaxInfo);
-        }
-        scanner.close();
     }
 
     private TaxInfo unmarshallData(String line) {
@@ -48,12 +36,12 @@ public class TaxInfoDaoFileImpl implements TaxInfoDao {
         return taxInfo;
     }
     @Override
-    public TaxInfo getTaxInfo(String taxState) throws PersistenceException {
+    public TaxInfo getTaxInfo(String taxState) {
         return taxInfoMap.get(taxState);
     }
 
     @Override
-    public Collection<TaxInfo> getAllTaxInfo() throws PersistenceException {
+    public Collection<TaxInfo> getAllTaxInfo() {
         return taxInfoMap.values();
     }
 }

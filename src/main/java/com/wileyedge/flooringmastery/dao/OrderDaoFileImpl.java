@@ -12,19 +12,42 @@ import java.util.*;
 
 public class OrderDaoFileImpl implements OrderDao {
     private final String ORDERS_FOLDER = "data/Orders/";
+    private final String ORDER_NUMBER = "data/Data/OrderNumber.txt";
     HashMap<Integer, Order> dayOrders;
-    private String orderFile;
-    int nextOrderNumber;
 
     public OrderDaoFileImpl() {
         dayOrders = new HashMap<>();
-        nextOrderNumber = 1;
     }
+
+    // Quick read and write function for the order number counter
+    // Got the insight from the AI, and edited it to fit the goal.
+    public int getNextOrderNumber() throws PersistenceException {
+        int nextOrderNumber;
+
+        try (BufferedReader br = new BufferedReader(new FileReader(ORDER_NUMBER))) {
+            nextOrderNumber = Integer.parseInt(br.readLine());
+        } catch (IOException e) {
+            throw new PersistenceException(e.getMessage());
+        }
+
+        try (FileWriter fw = new FileWriter(ORDER_NUMBER)) {
+            fw.write(nextOrderNumber + 1 + "");
+        } catch (IOException e) {
+            throw new PersistenceException(e.getMessage());
+        }
+
+        return nextOrderNumber;
+    }
+
 
     @Override
     public Order addOrder(LocalDate date, Order order) throws PersistenceException {
-        readData(date);
-        order.setOrderNumber(nextOrderNumber++);
+        try {
+            readData(date);
+        } catch (PersistenceException ignored) {}
+
+        int nextOrderNumber = getNextOrderNumber();
+        order.setOrderNumber(nextOrderNumber);
         order.setOrderDate(date);
         dayOrders.put(order.getOrderNumber(), order);
         writeData(date);
@@ -60,7 +83,7 @@ public class OrderDaoFileImpl implements OrderDao {
     }
 
     private String marshallData(Order order) {
-        return String.format("%d,%s,%s,%f,%s,%f,%f,%f,%f,%f,%f,%f",
+        return String.format("%d,%s,%s,%.2f,%s,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f",
                 order.getOrderNumber(),
                 order.getCustomerName(),
                 order.getTaxInfo().getStateCode(),
@@ -75,7 +98,7 @@ public class OrderDaoFileImpl implements OrderDao {
                 order.getTotal());
     }
 
-    private Order unmarshallData(String line) {
+    private Order unmarshallData(String line, LocalDate date) {
         String[] data = line.split(",");
         Iterator<String> it = Arrays.stream(data).iterator();
         int nameBlocks = data.length - 11;
@@ -99,6 +122,7 @@ public class OrderDaoFileImpl implements OrderDao {
         taxInfo.setTaxRate(taxRate);
         // Empty State Name, not needed at this point
 
+        order.setOrderDate(date);
         order.setOrderNumber(orderNumber);
         order.setInfo(customerName.toString(), taxInfo,
                 new Product(productType, costPerSqFt, laborCostSqFt), area);
@@ -106,51 +130,38 @@ public class OrderDaoFileImpl implements OrderDao {
     }
 
     private void writeData(LocalDate date) throws PersistenceException {
-        orderFile = String.format("%sOrders_%s.txt",
+        String orderFile = String.format("%sOrders_%s.txt",
                 ORDERS_FOLDER, date.format(DateTimeFormatter.ofPattern("MMddyyyy")));
-        PrintWriter writer;
 
-        try {
-            writer = new PrintWriter(new FileWriter(orderFile));
+        try (PrintWriter writer = new PrintWriter(new FileWriter(orderFile))) {
+            String headers = "OrderNumber,CustomerName,State,TaxRate,ProductType,Area,"
+                    + "CostPerSquareFoot,LaborCostPerSquareFoot,MaterialCost,LaborCost,Tax,Total";
+            writer.println(headers);
+            writer.flush();
+
+            dayOrders.values().forEach(order -> {
+                String line = marshallData(order);
+                writer.println(line);
+                writer.flush();
+            });
         } catch (IOException ex) {
             throw new PersistenceException(
                     "Could not write data to file.");
         }
-
-        String headers = "OrderNumber,CustomerName,State,TaxRate,ProductType,Area,CostPerSquareFoot,LaborCostPerSquareFoot,MaterialCost,LaborCost,Tax,Total";
-        writer.println(headers);
-        writer.flush();
-
-        String line;
-        for (Order order : dayOrders.values()) {
-            line = marshallData(order);
-            writer.println(line);
-            writer.flush();
-        }
-        writer.close();
     }
 
     private void readData(LocalDate date) throws PersistenceException {
-        orderFile = String.format("%sOrders_%s.txt",
+        String orderFile = String.format("%sOrders_%s.txt",
                 ORDERS_FOLDER, date.format(DateTimeFormatter.ofPattern("MMddyyyy")));
-        Scanner scanner;
 
-        try {
-            scanner = new Scanner(
-                    new BufferedReader(new FileReader(orderFile)));
-        } catch (FileNotFoundException ex) {
-            throw new PersistenceException(
-                    "Could not read data.");
+        dayOrders.clear();
+        try (BufferedReader br = new BufferedReader(new FileReader(orderFile))) {
+            br.lines().skip(1).forEach(line -> {
+                 Order currentOrder = unmarshallData(line, date);
+                dayOrders.put(currentOrder.getOrderNumber(), currentOrder);
+            });
+        } catch (IOException ex) {
+            throw new PersistenceException("Could not read data.");
         }
-
-        String currentLine;
-        Order currentOrder;
-        scanner.nextLine();
-        while (scanner.hasNextLine()) {
-            currentLine = scanner.nextLine();
-            currentOrder = unmarshallData(currentLine);
-            dayOrders.put(currentOrder.getOrderNumber(), currentOrder);
-        }
-        scanner.close();
     }
 }

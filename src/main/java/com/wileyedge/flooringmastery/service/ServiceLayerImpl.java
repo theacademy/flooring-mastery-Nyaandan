@@ -99,7 +99,9 @@ public class ServiceLayerImpl implements ServiceLayer {
 
         LocalDate dateObj = validateDate(date);
         Order order = orderDao.getOrder(dateObj, orderNumber);
-        fillTaxInfo(order);
+        if (order != null) {
+            fillTaxInfo(order);
+        }
         return order;
     }
 

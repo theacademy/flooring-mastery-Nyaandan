@@ -69,11 +69,6 @@ public class Controller {
         String productType = view.prompt("Product name: ");
         String area = view.prompt("Area to cover (number): ");
 
-        /*String customerName = "Ashe";
-        String stateCode = "TX";
-        String productType = "Tile";
-        String area = "1400";*/
-
         try {
             Order orderConf = service.prepareOrder(date, customerName, stateCode, productType, area);
             view.displayOrder(orderConf);
@@ -146,9 +141,8 @@ public class Controller {
             } else {
                 view.displayResponseOperationCanceled();
             }
-
         } catch (DataValidationException e) {
-            throw new RuntimeException(e);
+            view.displayExternalError(e.getMessage());
         }
     }
 

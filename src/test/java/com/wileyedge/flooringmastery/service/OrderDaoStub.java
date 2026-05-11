@@ -1,7 +1,6 @@
 package com.wileyedge.flooringmastery.service;
 
 import com.wileyedge.flooringmastery.dao.OrderDao;
-import com.wileyedge.flooringmastery.dao.PersistenceException;
 import com.wileyedge.flooringmastery.model.Order;
 import com.wileyedge.flooringmastery.model.Product;
 import com.wileyedge.flooringmastery.model.TaxInfo;
@@ -15,27 +14,27 @@ public class OrderDaoStub implements OrderDao {
     private final Order stubbedOrder = new Order();
 
     public OrderDaoStub() {
-        TaxInfo taxInfo = new TaxInfo("SY");
-        taxInfo.setStateName("Sharlayan");
-        taxInfo.setTaxRate(new BigDecimal("3.00"));
+        TaxInfo taxInfo = new TaxInfo("KY");
+        taxInfo.setStateName("Kentucky");
+        taxInfo.setTaxRate(new BigDecimal("6.00"));
 
         stubbedOrder.setInfo("Ameliance", taxInfo,
-                new Product("Granite",
-                        new BigDecimal("4.00"),
-                        new BigDecimal("6.20")),
+                new Product("Tile",
+                        new BigDecimal("3.50"),
+                        new BigDecimal("4.15")),
                 new BigDecimal("800"));
         stubbedOrder.setOrderNumber(14);
-        stubbedOrder.setOrderDate(LocalDate.parse("2022-04-12"));
+        stubbedOrder.setOrderDate(LocalDate.now().plusDays(1));
     }
 
 
     @Override
-    public Order addOrder(LocalDate date, Order order) throws PersistenceException {
+    public Order addOrder(LocalDate date, Order order) {
         return stubbedOrder;
     }
 
     @Override
-    public Order getOrder(LocalDate date, int orderNumber) throws PersistenceException {
+    public Order getOrder(LocalDate date, int orderNumber) {
         if (date.isEqual(stubbedOrder.getOrderDate())
                 && orderNumber == stubbedOrder.getOrderNumber()) {
             return stubbedOrder;
@@ -44,12 +43,12 @@ public class OrderDaoStub implements OrderDao {
     }
 
     @Override
-    public Collection<Order> getAllOrders(LocalDate date) throws PersistenceException {
+    public Collection<Order> getAllOrders(LocalDate date) {
         return List.of(stubbedOrder);
     }
 
     @Override
-    public Order editOrder(LocalDate date, int orderNumber, Order order) throws PersistenceException {
+    public Order editOrder(LocalDate date, int orderNumber, Order order) {
         if (date.isEqual(stubbedOrder.getOrderDate())
                 && orderNumber == stubbedOrder.getOrderNumber()) {
             return stubbedOrder;
@@ -58,7 +57,7 @@ public class OrderDaoStub implements OrderDao {
     }
 
     @Override
-    public Order removeOrder(LocalDate date, int orderNumber) throws PersistenceException {
+    public Order removeOrder(LocalDate date, int orderNumber) {
         if (date.isEqual(stubbedOrder.getOrderDate())
                 && orderNumber == stubbedOrder.getOrderNumber()) {
             return stubbedOrder;

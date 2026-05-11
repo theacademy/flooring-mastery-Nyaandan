@@ -1,0 +1,2 @@
+OrderNumber,CustomerName,State,TaxRate,ProductType,Area,CostPerSquareFoot,LaborCostPerSquareFoot,MaterialCost,LaborCost,Tax,Total
+1,Ashe,TX,4.45,Tile,1400.00,3.50,4.15,4900.00,5810.00,476.60,11186.60

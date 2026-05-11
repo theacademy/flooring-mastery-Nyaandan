@@ -1,1 +1,2 @@
 OrderNumber,CustomerName,State,TaxRate,ProductType,Area,CostPerSquareFoot,LaborCostPerSquareFoot,MaterialCost,LaborCost,Tax,Total,Date
+4,Kraken Co.,KY,6.00,Carpet,800.00,2.25,2.10,1800.00,1680.00,208.80,3688.80,05-11-2026

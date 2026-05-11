@@ -1,0 +1,2 @@
+OrderNumber,CustomerName,State,TaxRate,ProductType,Area,CostPerSquareFoot,LaborCostPerSquareFoot,MaterialCost,LaborCost,Tax,Total
+3,Franz,KY,6.00,Wood,1400.00,5.15,4.75,7210.00,6650.00,831.60,14691.60

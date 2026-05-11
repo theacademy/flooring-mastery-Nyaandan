@@ -1,0 +1,4 @@
+OrderNumber,CustomerName,State,TaxRate,ProductType,Area,CostPerSquareFoot,LaborCostPerSquareFoot,MaterialCost,LaborCost,Tax,Total,Date
+1,Ashe,TX,4.45,Tile,1400.00,3.50,4.15,4900.00,5810.00,476.60,11186.60,06-01-2026
+2,Will,KY,6.00,Laminate,1200.00,1.75,2.10,2100.00,2520.00,277.20,4897.20,06-02-2026
+3,Franz,KY,6.00,Wood,1400.00,5.15,4.75,7210.00,6650.00,831.60,14691.60,06-03-2026
